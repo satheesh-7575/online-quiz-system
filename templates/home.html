@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Home | Online Quiz System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #2457c5;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 650px;
+            margin: auto;
+            padding: 40px 30px;
+            background: white;
+            text-align: center;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .buttons a {
+            display: inline-block;
+            min-width: 150px;
+            padding: 14px 22px;
+            background: #2457c5;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .buttons a:hover {
+            background: #1946a8;
+        }
+
+        .buttons .login {
+            background: #333;
+        }
+
+        .buttons .login:hover {
+            background: #555;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #ddd;
+        }
+
+        .feature {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px;
+        }
+
+        .flashes li {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 7px;
+            background: #f1f4f8;
+        }
+
+        .flashes .success {
+            background: #edfff2;
+            color: #176b32;
+        }
+
+        .flashes .error {
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .buttons a {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎯 Online Quiz System</h1>
+    </header>
+
+    <main class="container">
+
+        <div class="icon">📚</div>
+
+        <h2>Welcome to the Quiz App!</h2>
+
+        <p class="description">
+            Test your knowledge, challenge yourself,
+            explore different categories and improve
+            your learning skills through fun quizzes.
+        </p>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Signup and Login -->
+        <div class="buttons">
+
+            <a href="{{ url_for('signup') }}">
+                📝 Sign Up
+            </a>
+
+            <a href="{{ url_for('login') }}" class="login">
+                🔐 Login
+            </a>
+
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+
+            <div class="feature">
+                🎯 Multiple Quiz Categories
+            </div>
+
+            <div class="feature">
+                🏆 Leaderboard
+            </div>
+
+            <div class="feature">
+                🔒 Secure Login
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer>
+        Online Quiz System | Learn, Play and Improve
+    </footer>
+
+</body>
+</html>

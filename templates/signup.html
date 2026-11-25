@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up | Online Quiz System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2457c5;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2457c5;
+            box-shadow: 0 0 4px rgba(36, 87, 197, 0.2);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            background: #2457c5;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1946a8;
+        }
+
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px;
+        }
+
+        .flashes li {
+            padding: 11px;
+            margin-bottom: 9px;
+            border-radius: 6px;
+            background: #f1f4f8;
+        }
+
+        .flashes .success {
+            background: #edfff2;
+            color: #176b32;
+        }
+
+        .flashes .error {
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        .links {
+            margin-top: 22px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        a {
+            color: #2457c5;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>📝 Create Account</h1>
+
+        <p class="description">
+            Join the Online Quiz System and start testing your knowledge!
+        </p>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Signup Form -->
+        <form method="POST" action="{{ url_for('signup') }}">
+
+            <label for="username">Email Address</label>
+
+            <input
+                type="email"
+                id="username"
+                name="username"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password (minimum 8 characters)"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+
+            <button type="submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <div class="links">
+
+            <p>
+                Already have an account?
+                <a href="{{ url_for('login') }}">Login</a>
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('home') }}" class="home-link">
+            Back to Home
+        </a>
+
+    </main>
+
+</body>
+</html>

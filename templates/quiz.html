@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Time | Online Quiz System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px 15px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 20px auto;
+        }
+
+        .header {
+            text-align: center;
+            background: #2457c5;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .timer {
+            position: sticky;
+            top: 10px;
+            z-index: 5;
+            width: 190px;
+            margin: 20px auto;
+            padding: 14px;
+            background: #16834a;
+            color: white;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .warning {
+            background: #c0392b;
+        }
+
+        .instructions {
+            padding: 15px;
+            background: #eaf0ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            background: white;
+            margin-bottom: 20px;
+            padding: 22px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .question h3 {
+            font-size: 18px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background: #f0f4ff;
+            border-color: #2457c5;
+        }
+
+        .option input {
+            accent-color: #2457c5;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 15px;
+            background: #2457c5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1946a8;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #2457c5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="header">
+            <h1>🎯 Quiz Time</h1>
+            <p>Category: {{ category }}</p>
+        </header>
+
+        <div class="timer" id="timer">
+            02:00
+        </div>
+
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            You have 2 minutes to complete the quiz.
+            All correct answers will be revealed after submission.
+            The quiz will automatically submit when time expires.
+        </div>
+
+        {% if questions %}
+
+        <form
+            id="quizForm"
+            method="POST"
+            action="{{ url_for('submit_quiz') }}"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <input
+                type="hidden"
+                name="category"
+                value="{{ category }}"
+            >
+
+            {% for q in questions %}
+
+            <section class="question">
+
+                <h3>
+                    {{ loop.index }}. {{ q.question_text }}
+                </h3>
+
+                <label class="option">
+                    <input type="radio"
+                           name="q{{ q.id }}"
+                           value="A"
+                           required>
+                    {{ q.option_a }}
+                </label>
+
+                <label class="option">
+                    <input type="radio"
+                           name="q{{ q.id }}"
+                           value="B"
+                           required>
+                    {{ q.option_b }}
+                </label>
+
+                <label class="option">
+                    <input type="radio"
+                           name="q{{ q.id }}"
+                           value="C"
+                           required>
+                    {{ q.option_c }}
+                </label>
+
+                <label class="option">
+                    <input type="radio"
+                           name="q{{ q.id }}"
+                           value="D"
+                           required>
+                    {{ q.option_d }}
+                </label>
+
+            </section>
+
+            {% endfor %}
+
+            <button type="submit" id="submitButton">
+                Submit Quiz
+            </button>
+
+        </form>
+
+        {% else %}
+
+        <p>No questions available.</p>
+
+        {% endif %}
+
+        <a href="{{ url_for('dashboard') }}" class="back">
+            Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+
+        const quizForm = document.getElementById("quizForm");
+        const timerDisplay = document.getElementById("timer");
+
+        const startedAt = {{ quiz_started_at | tojson }};
+        const timeLimit = {{ quiz_time_limit | tojson }};
+
+        const deadline = startedAt * 1000 + timeLimit * 1000;
+
+        let submitted = false;
+
+        function updateTimer() {
+
+            if (submitted || !quizForm) {
+                return;
+            }
+
+            const remaining = Math.max(
+                0,
+                Math.ceil((deadline - Date.now()) / 1000)
+            );
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            timerDisplay.textContent =
+                String(minutes).padStart(2, "0") +
+                ":" +
+                String(seconds).padStart(2, "0");
+
+            if (remaining <= 30) {
+                timerDisplay.classList.add("warning");
+            }
+
+            if (remaining <= 0) {
+
+                submitted = true;
+
+                timerDisplay.textContent = "Time's Up!";
+
+                alert(
+                    "Time is over! Your quiz is being submitted."
+                );
+
+                // Submit even if some questions are unanswered.
+                quizForm.submit();
+            }
+        }
+
+        if (quizForm) {
+
+            quizForm.addEventListener("submit", function(event) {
+
+                if (submitted) {
+                    event.preventDefault();
+                    return;
+                }
+
+                submitted = true;
+
+                document.getElementById(
+                    "submitButton"
+                ).disabled = true;
+            });
+
+            updateTimer();
+
+            const timerInterval = setInterval(function() {
+
+                updateTimer();
+
+                if (submitted) {
+                    clearInterval(timerInterval);
+                }
+
+            }, 250);
+        }
+
+    </script>
+
+</body>
+</html>

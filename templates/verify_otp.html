@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Verify OTP | Online Quiz System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f5f9;
+            color: #202633;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+            padding: 35px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(25, 38, 60, 0.09);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2457c5;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin: 22px 0 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 22px;
+            text-align: center;
+            letter-spacing: 7px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2457c5;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 14px;
+            background: #2457c5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1946a8;
+        }
+
+        .flash {
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 7px;
+            background: #f1f4f8;
+        }
+
+        .flash.error {
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        .flash.success {
+            background: #edfff2;
+            color: #176b32;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #2457c5;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>📧 Verify Your Email</h1>
+
+        <p class="description">
+            We have sent a six-digit OTP to your registered email:
+        </p>
+
+        <p class="description">
+            <strong>{{ email }}</strong>
+        </p>
+
+        <p class="description">
+            Your OTP expires in {{ expires_minutes }} minutes.
+        </p>
+
+        <!-- Flash messages -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <!-- OTP verification form -->
+
+        <form method="POST"
+              action="{{ url_for('verify_otp') }}">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <label for="otp">
+                Enter Six-Digit OTP
+            </label>
+
+            <input
+                type="text"
+                id="otp"
+                name="otp"
+                placeholder="000000"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                minlength="6"
+                maxlength="6"
+                autocomplete="one-time-code"
+                required
+                autofocus
+            >
+
+            <button type="submit">
+                Verify OTP
+            </button>
+
+        </form>
+
+        <a href="{{ url_for('forgot_password') }}"
+           class="back-link">
+            Request Another OTP
+        </a>
+
+        <a href="{{ url_for('login') }}"
+           class="back-link">
+            Back to Login
+        </a>
+
+    </main>
+
+</body>
+</html>

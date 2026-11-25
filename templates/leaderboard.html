@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Top 10 Leaderboard | Online Quiz System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #2457c5;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #2457c5;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f7fb;
+        }
+
+        .gold {
+            background: #fff4c2;
+            font-weight: bold;
+        }
+
+        .silver {
+            background: #eeeeee;
+            font-weight: bold;
+        }
+
+        .bronze {
+            background: #f8e2d2;
+            font-weight: bold;
+        }
+
+        .empty-message {
+            padding: 25px;
+            background: #f5f7fb;
+            border-radius: 8px;
+        }
+
+        .flash {
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 7px;
+            background: #f1f4f8;
+        }
+
+        .flash.success {
+            background: #edfff2;
+            color: #176b32;
+        }
+
+        .flash.error {
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .buttons a {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #2457c5;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .buttons a:hover {
+            background: #1946a8;
+        }
+
+        .dashboard {
+            background: #333 !important;
+        }
+
+        .dashboard:hover {
+            background: #555 !important;
+        }
+
+        /* Admin controls */
+
+        .admin-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #f0c5c5;
+            border-radius: 9px;
+            background: #fff8f8;
+        }
+
+        .admin-panel h3 {
+            color: #9b2525;
+            margin-top: 0;
+        }
+
+        .admin-panel p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .admin-actions button {
+            padding: 13px 20px;
+            background: #b42318;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .admin-actions button:hover {
+            background: #8f1d14;
+        }
+
+        @media (max-width: 500px) {
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            th, td {
+                padding: 10px 7px;
+                font-size: 13px;
+            }
+
+            .buttons a,
+            .admin-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>🏆 TOP 10 LEADERBOARD</h1>
+
+        <h2>Category: {{ category }}</h2>
+
+        <!-- Flash Messages -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for message_category, message in messages %}
+                <div class="flash {{ message_category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+
+        <!-- Leaderboard Table -->
+
+        {% if scores %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player Name</th>
+                            <th>Score</th>
+                            <th>Total Marks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for score in scores %}
+
+                            <tr class="
+                                {% if loop.index == 1 %}gold
+                                {% elif loop.index == 2 %}silver
+                                {% elif loop.index == 3 %}bronze
+                                {% endif %}
+                            ">
+
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        🥇 1
+                                    {% elif loop.index == 2 %}
+                                        🥈 2
+                                    {% elif loop.index == 3 %}
+                                        🥉 3
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ score.user.username }}
+                                </td>
+
+                                <td>
+                                    {{ score.score }}
+                                </td>
+
+                                <td>
+                                    {{ score.total }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-message">
+                <h3>No Players Yet!</h3>
+                <p>Complete a quiz to appear on this leaderboard.</p>
+            </div>
+
+        {% endif %}
+
+
+        <!-- Admin Controls -->
+
+        {% if is_admin %}
+
+            <section class="admin-panel">
+
+                <h3>⚙️ Admin Controls</h3>
+
+                <p>
+                    Clear all saved leaderboard scores for
+                    <strong>{{ category }}</strong>.
+                    This will not delete registered users or quiz questions.
+                </p>
+
+                <form
+                    class="admin-actions"
+                    method="POST"
+                    action="{{ url_for(
+                        'admin_clear_leaderboard',
+                        category=category
+                    ) }}"
+                    onsubmit="return confirm(
+                        'Are you sure you want to clear all scores for this category? This action cannot be undone.'
+                    );"
+                >
+
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+                    <button type="submit">
+                        🗑️ Clear This Category's Leaderboard
+                    </button>
+
+                </form>
+
+            </section>
+
+        {% endif %}
+
+
+        <!-- Navigation Buttons -->
+
+        <div class="buttons">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="dashboard">
+                🏠 Back to Dashboard
+            </a>
+
+            <a href="{{ url_for('choose_category') }}">
+                🎯 Try Another Quiz
+            </a>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
