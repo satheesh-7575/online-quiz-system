@@ -38,12 +38,31 @@ if not app.secret_key:
     raise RuntimeError(
         "SECRET_KEY is missing. Add SECRET_KEY to your PyCharm environment variables."
     )
+database_url = os.environ.get("DATABASE_URL", "").strip()
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
+if database_url:
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace(
+            "postgres://", "postgresql+psycopg://", 1
+        )
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace(
+            "postgresql://", "postgresql+psycopg://", 1
+        )
+else:
+    # Local development only
+    database_url = "sqlite:///quiz.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "connect_args": {"check_same_thread": False}
-}
+
+if database_url.startswith("sqlite"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "connect_args": {"check_same_thread": False}
+    }
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # Set COOKIE_SECURE=true only after deploying the site over HTTPS.
@@ -1012,6 +1031,8 @@ def initialize_database():
             db.session.commit()
 
 
+# Initialize database for local and Render deployment
+initialize_database()
+
 if __name__ == "__main__":
-    initialize_database()
     app.run(debug=True, host="0.0.0.0", port=5000)

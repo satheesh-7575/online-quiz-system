@@ -5,3 +5,4 @@ Werkzeug
 qrcode[pil]
 gunicorn
 certifi
+psycopg[binary]
